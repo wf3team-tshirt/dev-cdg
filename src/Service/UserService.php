@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 use App\Entity\User;
 
 class UserService {
@@ -41,9 +43,17 @@ class UserService {
     //     return $event->setPoster( $filename );
     // }
 
-    public function add( $user ) {
+    public function add( $user, UserPasswordEncoderInterface $passwordEncoder ) {
+        // On définit le rôle
+        $user->addRole( ['ROLE_BUYER'] );
+
         // On crypte le mot de passe
-        $user->setPassword( password_hash( $user->getPassword(), PASSWORD_BCRYPT ) );
+        $password = $passwordEncoder->encodePassword( $user, $user->getPlainPassword() );
+        $user->setPassword( $password );
+
+        // On active par défaut
+        $user->setActive( true );
+
         $repo = $this->om->getRepository( User::class );
         $this->om->persist( $user );
         $this->om->flush();

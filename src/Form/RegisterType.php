@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class RegisterType extends AbstractType
 {
@@ -26,16 +28,18 @@ class RegisterType extends AbstractType
             ->add('firstname', TextType::class, array( 'label' => 'Prénom',
                                                   'required' => true,
                                                 ))
-            ->add('password', PasswordType::class, array( 'label' => 'Mot de passe',
-                                                'required' => true,
+            ->add('plainpassword', RepeatedType::class, array(
+                                                'type' => PasswordType::class,
+                                                'first_options' => array( 'label' => 'Mot de passe', 'required' => true ),
+                                                'second_options' => array( 'label' => 'Confirmation du mot de passe', 'required' => true ),
                                                 ))
             ->add('email', EmailType::class, array( 'label' => 'Email',
                                                     'required' => true,
                                                 ))
             ->add('phone', TelType::class, array( 'label' => 'Téléphone',
                                                   'required' => false,
-                                                ))     
-                                                                                       
+                                                ))
+            ->add('submit', SubmitType::class, ['label'=>'Envoyer', 'attr'=>['class'=>'btn-primary btn-block']])
         ;
     }
 

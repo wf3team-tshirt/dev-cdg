@@ -2,18 +2,22 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * TUser
  *
  * @ORM\Table(name="user")
+ * @UniqueEntity(fields="username")
+ * @UniqueEntity(fields="email")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements UserInterface
+class User implements UserInterface//, \Serializable
 {
     /**
      * 
@@ -25,7 +29,7 @@ class User implements UserInterface
      * @var int
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id()
+     * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
@@ -34,6 +38,8 @@ class User implements UserInterface
      * @var string
      * 
      * @ORM\Column(name="username", type="string", length=50, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Length(max=50)
      */
     private $username;
 
@@ -41,6 +47,8 @@ class User implements UserInterface
      * @var string
      * 
      * @ORM\Column(name="firstname", type="string", length=50, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Length(max=50)
      */
      private $firstname;
 
@@ -48,6 +56,8 @@ class User implements UserInterface
      * @var string
      * 
      * @ORM\Column(name="lastname", type="string", length=50, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Length(max=50)
      */
     private $lastname;
 
@@ -55,12 +65,15 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
+     * @Assert\Length(max=255)
      */
      private $password;
 
      /**
      * @var string
-     *
+     * 
+     * @Assert\NotBlank()
+     * @Assert\Length(max=255)
      */
     private $plainpassword;
 
@@ -68,20 +81,29 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=50, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     * @Assert\Length(max=50)
      */
     private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="phone", type="string", length=50, nullable=false)
+     * @ORM\Column(name="phone", type="string", length=50, nullable=true)
+     * @Assert\Length(max=50)
      */
     private $phone;
 
     /**
+     * @ORM\Column(name="is_active", type="boolean")
+     */
+    private $isActive;
+
+    /**
      * @var array
      *
-     * @ORM\Column(name="roles", type="array", length=0, nullable=false)
+     * @ORM\Column(name="roles", type="array", nullable=false)
      */
     private $roles = [];
 
@@ -94,90 +116,92 @@ class User implements UserInterface
 
 
 
-    public function __construct() {}
+    public function __construct() {
+        $this->isActive = true;
+    }
 
     /**
      * 
      * METHODS
      * 
      */
-    public function getId(): ?int
+    public function getId(): self
     {
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): self
     {
         return $this->username;
     }
 
-    public function setUsername(string $username): self
+    public function setUsername( string $username ): self
     {
         $this->username = $username;
         return $this;
     }
 
-    public function getFirstname(): ?string
+    public function getFirstname(): self
     {
         return $this->firstname;
     }
 
-    public function setFirstname(string $firstname): self
+    public function setFirstname( string $firstname ): self
     {
         $this->firstname = $firstname;
         return $this;
     }
 
-    public function getLastname(): ?string
+    public function getLastname(): self
     {
         return $this->lastname;
     }
 
-    public function setLastname(string $lastname): self
+    public function setLastname( string $lastname ): self
     {
         $this->lastname = $lastname;
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): self
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword( string $password ): self
     {
         $this->password = $password;
         return $this;
     }
 
-    public function getPlainPassword(): ?string
+    public function getPlainPassword(): self
     {
         return $this->plainpassword;
     }
 
-    public function setPlainPassword(string $plainpassword): self
+    public function setPlainPassword( string $plainpassword ): self
     {
         $this->plainpassword = $plainpassword;
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): self
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail( string $email ): self
     {
         $this->email = $email;
         return $this;
     }
 
-    public function getPhone(): ?string
+    public function getPhone(): self
     {
         return $this->phone;
     }
 
-    public function setPhone(string $phone): self
+    public function setPhone( string $phone ): self
     {
         $this->phone = $phone;
         return $this;
@@ -194,15 +218,33 @@ class User implements UserInterface
     //     return $this;
     // }
 
-    public function getRoles(): ?array
+    public function getRoles(): self
     {
+        if (empty($this->roles)) {
+            return ['ROLE_BUYER'];
+        }
         return $this->roles;
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles( array $roles ): self
     {
         $this->roles = $roles;
         return $this;
+    }
+
+    function getIsActive(): self
+    {
+        return $this->isActive;
+    }
+
+    function setIsActive($isActive): self
+    {
+        $this->isActive = $isActive;
+    }
+
+    function addRole( $role ): self
+    {
+        $this->roles[] = $role;
     }
 
     public function eraseCredentials() {}
@@ -210,5 +252,39 @@ class User implements UserInterface
     public function getSalt() {
         return null;
     }
+
+    // /** @see \Serializable::serialize() */
+    // public function serialize() {
+    //     return base64_encode(serialize(array(
+    //         $this->id,
+    //         $this->username,
+    //         $this->lastname,
+    //         $this->firstname,
+    //         $this->email,
+    //         $this->phone,
+    //         $this->password,
+    //         $this->roles,
+    //         $this->isActive,
+    //             // see section on salt below
+    //             // $this->salt,
+    //     )));
+    // }
+
+    // /** @see \Serializable::unserialize() */
+    // public function unserialize($serialized) {
+    //     list (
+    //         $this->id,
+    //         $this->username,
+    //         $this->lastname,
+    //         $this->firstname,
+    //         $this->email,
+    //         $this->phone,
+    //         $this->password,
+    //         $this->roles,
+    //         $this->isActive,
+    //             // see section on salt below
+    //             // $this->salt
+    //             ) = unserialize(base64_decode($serialized));
+    // }
 
 }

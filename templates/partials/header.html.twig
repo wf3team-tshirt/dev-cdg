@@ -1,7 +1,9 @@
 <header>
     {% block nav %}
+{{ dump(app) }}
 {{ dump(app.user) }}
 {{ dump(app.session) }}
+{{ dump(app.request) }}
 
         {# NAVBAR #}
         <nav class="navbar navbar-expand-lg navbar-warning bg-warning">

@@ -9,6 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\Authentication\UserPasswordEncoderInterface;
 
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+
 use App\Entity\User;
 use App\Service\UserService;
 
@@ -17,38 +21,6 @@ use App\Form\RegisterType;
 
 class UserController extends AbstractController
 {
-    /**
-     * @Route("/user/login", name="login")
-     */
-    public function login(Request $request, UserService $userService, AuthenticationUtils $authenticationUtils )
-    {
-        $user = new User();
-
-        $form = $this->createForm( LoginType::class, $user );
-
-        // Contrôle les @Assert dans l'entité
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            $user = $form->getData();
-            // Service
-
-            if ( $userService->isConnected( $user ) ) {
-                return $this->redirectToRoute('home');
-            } else {
-                return $this->redirectToRoute('login');
-            };
-        }
-
-        return $this->render('user/login.html.twig', [
-            'title' => 'Se connecter',
-            'lasUsername' => $authenticationUtils->getLastUsername(),
-            'form' => $form->createView(),
-        ]);
-
-    }
-
     /**
      * @Route("/user/register", name="register")
      */
@@ -64,17 +36,19 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $user = $form->getData();
-            $user->setRoles( ['ROLE_USER'] );
-
-            // Service
+            // Service - Roles / Password / ...
             $userService->add( $user );
 
-            return $this->redirectToRoute('account', [ 'id' => $user->getId() ]);
+            // Flash
+            $this->addFlash('success', 'Votre compte a été bien enregistré.');
+
+            // return $this->redirectToRoute('account', [ 'id' => $user->getId() ]);
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('user/register.html.twig', [
-            'title' => 'S\'inscrire',
+            'title' => 'Inscription',
+            'mainRegstration' => true,
             'form' => $form->createView(),
         ]);
 
