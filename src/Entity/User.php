@@ -17,7 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity(fields="email")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements UserInterface//, \Serializable
+class User implements UserInterface, \Serializable
 {
     /**
      * 
@@ -125,12 +125,12 @@ class User implements UserInterface//, \Serializable
      * METHODS
      * 
      */
-    public function getId(): self
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getUsername(): self
+    public function getUsername()
     {
         return $this->username;
     }
@@ -141,7 +141,7 @@ class User implements UserInterface//, \Serializable
         return $this;
     }
 
-    public function getFirstname(): self
+    public function getFirstname()
     {
         return $this->firstname;
     }
@@ -152,7 +152,7 @@ class User implements UserInterface//, \Serializable
         return $this;
     }
 
-    public function getLastname(): self
+    public function getLastname()
     {
         return $this->lastname;
     }
@@ -163,7 +163,7 @@ class User implements UserInterface//, \Serializable
         return $this;
     }
 
-    public function getPassword(): self
+    public function getPassword()
     {
         return $this->password;
     }
@@ -174,7 +174,7 @@ class User implements UserInterface//, \Serializable
         return $this;
     }
 
-    public function getPlainPassword(): self
+    public function getPlainPassword()
     {
         return $this->plainpassword;
     }
@@ -185,7 +185,7 @@ class User implements UserInterface//, \Serializable
         return $this;
     }
 
-    public function getEmail(): self
+    public function getEmail()
     {
         return $this->email;
     }
@@ -196,7 +196,7 @@ class User implements UserInterface//, \Serializable
         return $this;
     }
 
-    public function getPhone(): self
+    public function getPhone()
     {
         return $this->phone;
     }
@@ -218,7 +218,7 @@ class User implements UserInterface//, \Serializable
     //     return $this;
     // }
 
-    public function getRoles(): self
+    public function getRoles()
     {
         if (empty($this->roles)) {
             return ['ROLE_BUYER'];
@@ -232,7 +232,7 @@ class User implements UserInterface//, \Serializable
         return $this;
     }
 
-    function getIsActive(): self
+    function getIsActive()
     {
         return $this->isActive;
     }
@@ -242,7 +242,7 @@ class User implements UserInterface//, \Serializable
         $this->isActive = $isActive;
     }
 
-    function addRole( $role ): self
+    function addRole( $role )
     {
         $this->roles[] = $role;
     }
@@ -253,38 +253,38 @@ class User implements UserInterface//, \Serializable
         return null;
     }
 
-    // /** @see \Serializable::serialize() */
-    // public function serialize() {
-    //     return base64_encode(serialize(array(
-    //         $this->id,
-    //         $this->username,
-    //         $this->lastname,
-    //         $this->firstname,
-    //         $this->email,
-    //         $this->phone,
-    //         $this->password,
-    //         $this->roles,
-    //         $this->isActive,
-    //             // see section on salt below
-    //             // $this->salt,
-    //     )));
-    // }
+    /** @see \Serializable::serialize() */
+    public function serialize() {
+        return base64_encode(serialize(array(
+            $this->id,
+            $this->username,
+            $this->lastname,
+            $this->firstname,
+            $this->email,
+            $this->phone,
+            $this->password,
+            $this->roles,
+            $this->isActive,
+                // see section on salt below
+                // $this->salt,
+        )));
+    }
 
-    // /** @see \Serializable::unserialize() */
-    // public function unserialize($serialized) {
-    //     list (
-    //         $this->id,
-    //         $this->username,
-    //         $this->lastname,
-    //         $this->firstname,
-    //         $this->email,
-    //         $this->phone,
-    //         $this->password,
-    //         $this->roles,
-    //         $this->isActive,
-    //             // see section on salt below
-    //             // $this->salt
-    //             ) = unserialize(base64_decode($serialized));
-    // }
+    /** @see \Serializable::unserialize() */
+    public function unserialize($serialized) {
+        list (
+            $this->id,
+            $this->username,
+            $this->lastname,
+            $this->firstname,
+            $this->email,
+            $this->phone,
+            $this->password,
+            $this->roles,
+            $this->isActive,
+                // see section on salt below
+                // $this->salt
+                ) = unserialize(base64_decode($serialized), ['allowed_classes' => false]);
+    }
 
 }

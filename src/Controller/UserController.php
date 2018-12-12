@@ -67,7 +67,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/adm/logout", name="logout")
+     * @Route("/logout", name="logout")
      */
     public function logout() {}
 

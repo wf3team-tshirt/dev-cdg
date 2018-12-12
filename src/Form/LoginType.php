@@ -17,11 +17,12 @@ class LoginType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('_username', TextType::class, array( 'label' => 'Utilisateur' ))
-            ->add('_password', PasswordType::class, array( 'label' => 'Mot de passe'
+            ->add('username', TextType::class, array( 'label' => 'Utilisateur' ))
+            ->add('password', PasswordType::class, array( 'label' => 'Mot de passe'
                                                 ))
             ->add('submit', SubmitType::class, ['label'=>'Se connecter', 'attr'=>['class'=>'btn-primary btn-block']])
-                                                ;
+            ->getForm()
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

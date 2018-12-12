@@ -27,6 +27,21 @@ class SecurityController extends AbstractController {
         $user = new User();
         $form = $this->createForm( LoginType::class, $user );
 
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            if ( $userService->isConnected( $user ) ) {
+                // $session = new Session(new NativeSessionStorage(), new AttributeBag());
+                // $session->set( 'name', $user->getUsername() );
+                // $session->set( 'role', $user->getRoles() );
+                return $this->redirectToRoute('home');
+            } else {
+                return $this->redirectToRoute('login');
+            };
+        }
+
+    
         return $this->render('security/login.html.twig', [
                     'title' => 'Connexion',
                     'mainNavLogin' => true,
